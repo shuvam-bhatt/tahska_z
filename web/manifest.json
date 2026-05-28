@@ -1,11 +1,11 @@
 {
-    "name": "sentinel",
-    "short_name": "sentinel",
+    "name": "aegis",
+    "short_name": "aegis",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0A1628",
+    "theme_color": "#00C6AE",
+    "description": "Secure closed-group communication app",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
