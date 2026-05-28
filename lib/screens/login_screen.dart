@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Activate containment for login screen
     ContainmentUtils().activateContainment(
       onScreenshotDetected: () {
         SecurityWarning.showScreenshotWarning(context);
@@ -56,16 +55,15 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
                 
                 // Logo and Title
                 Center(
@@ -75,69 +73,84 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1B365D),
-                          borderRadius: BorderRadius.circular(15),
+                          color: const Color(0xFF182842),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF00C6AE).withOpacity(0.3),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF00C6AE).withOpacity(0.2),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
                         child: const Icon(
-                          Icons.security,
+                          Icons.shield_outlined,
                           size: 40,
-                          color: Colors.white,
+                          color: Color(0xFF00C6AE),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       const Text(
-                        'SENTINEL',
+                        'AEGIS',
                         style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B365D),
-                          letterSpacing: 2,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFFE8ECF2),
+                          letterSpacing: 4,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Secure Communication Platform',
+                      const Text(
+                        'SECURE COMMUNICATIONS',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                          fontSize: 12,
+                          color: Color(0xFF00C6AE),
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
                 
-                const SizedBox(height: 50),
+                const SizedBox(height: 60),
                 
                 // Login Form
                 Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Text(
-                          'Sign In',
+                          'AUTHORIZATION',
                           style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1B365D),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFE8ECF2),
+                            letterSpacing: 1.5,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 32),
                         
                         // Email Field
                         SecureTextField(
                           controller: _emailController,
-                          hintText: 'Email Address',
+                          hintText: 'user@defense.mil',
                           keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'Email is required';
+                            if (!value.contains('@')) return 'Invalid email format';
+                            return null;
+                          },
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.email_outlined),
-                            labelText: 'Email',
+                            labelText: 'Clearance Email',
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -145,16 +158,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Password Field
                         SecureTextField(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: 'Enter passphrase',
                           obscureText: _obscurePassword,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'Passphrase is required';
+                            return null;
+                          },
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outlined),
-                            labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: 'Passphrase',
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility,
+                                color: const Color(0xFF8A9AB5),
                               ),
                               onPressed: () {
                                 setState(() {
@@ -164,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 32),
                         
                         // Login Button
                         Consumer<AuthProvider>(
@@ -178,40 +196,34 @@ class _LoginScreenState extends State<LoginScreen> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
+                                          Color(0xFF0A1628),
                                         ),
                                       ),
                                     )
-                                  : const Text('Sign In'),
+                                  : const Text('AUTHENTICATE'),
                             );
                           },
                         ),
                         
-                        const SizedBox(height: 20),
-                        
-                        // Error Message
-                        Consumer<AuthProvider>(
-                          builder: (context, authProvider, child) {
-                            if (authProvider.error != null) {
-                              return Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.red[50],
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red[200]!),
-                                ),
-                                child: Text(
-                                  authProvider.error!,
-                                  style: TextStyle(
-                                    color: Colors.red[700],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        ),
+                        if (Provider.of<AuthProvider>(context).error != null) ...[
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF5A5F).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: const Color(0xFFFF5A5F).withOpacity(0.3)),
+                            ),
+                            child: Text(
+                              Provider.of<AuthProvider>(context).error!,
+                              style: const TextStyle(
+                                color: Color(0xFFFF5A5F),
+                                fontSize: 13,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -223,9 +235,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: Colors.grey[600]),
+                    const Text(
+                      "No clearance? ",
+                      style: TextStyle(color: Color(0xFF8A9AB5)),
                     ),
                     TextButton(
                       onPressed: () {
@@ -236,10 +248,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       child: const Text(
-                        'Sign Up',
+                        'Request Access',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B365D),
                         ),
                       ),
                     ),
@@ -253,10 +264,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     SecurityWarning.showSecurityInfo(context);
                   },
-                  icon: const Icon(Icons.info_outline, size: 18),
-                  label: const Text('Security Features'),
+                  icon: const Icon(Icons.security, size: 18),
+                  label: const Text('Protocol Information'),
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.grey[600],
+                    foregroundColor: const Color(0xFF8A9AB5),
                   ),
                 ),
               ],

@@ -17,7 +17,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -25,11 +25,11 @@ class MessageBubble extends StatelessWidget {
           if (!isMe) ...[
             CircleAvatar(
               radius: 16,
-              backgroundColor: const Color(0xFF1B365D),
+              backgroundColor: const Color(0xFF182842),
               child: Text(
                 message.senderName[0].toUpperCase(),
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF00C6AE),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -40,11 +40,14 @@ class MessageBubble extends StatelessWidget {
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
+                maxWidth: MediaQuery.of(context).size.width * 0.75,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isMe ? const Color(0xFF1B365D) : Colors.grey[200],
+                color: isMe ? const Color(0xFF00C6AE).withOpacity(0.15) : const Color(0xFF182842),
+                border: Border.all(
+                  color: isMe ? const Color(0xFF00C6AE).withOpacity(0.5) : Colors.white.withOpacity(0.05),
+                ),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
@@ -56,15 +59,18 @@ class MessageBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!isMe)
-                    Text(
-                      message.senderName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        message.senderName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: Color(0xFF00C6AE),
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
-                  if (!isMe) const SizedBox(height: 4),
                   
                   // Message content
                   if (message.isFile)
@@ -72,13 +78,14 @@ class MessageBubble extends StatelessWidget {
                   else
                     SecureText(
                       message.content,
-                      style: TextStyle(
-                        color: isMe ? Colors.white : Colors.black87,
-                        fontSize: 16,
+                      style: const TextStyle(
+                        color: Color(0xFFE8ECF2),
+                        fontSize: 15,
+                        height: 1.3,
                       ),
                     ),
                   
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   
                   // Timestamp
                   Row(
@@ -87,16 +94,17 @@ class MessageBubble extends StatelessWidget {
                       Text(
                         _formatTime(message.timestamp),
                         style: TextStyle(
-                          color: isMe ? Colors.white70 : Colors.grey[600],
-                          fontSize: 12,
+                          color: isMe ? const Color(0xFF00C6AE).withOpacity(0.8) : const Color(0xFF8A9AB5),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       if (message.isEncrypted) ...[
                         const SizedBox(width: 4),
                         Icon(
                           Icons.lock,
-                          size: 12,
-                          color: isMe ? Colors.white70 : Colors.grey[600],
+                          size: 10,
+                          color: isMe ? const Color(0xFF00C6AE).withOpacity(0.8) : const Color(0xFF8A9AB5),
                         ),
                       ],
                     ],
@@ -107,13 +115,13 @@ class MessageBubble extends StatelessWidget {
           ),
           if (isMe) ...[
             const SizedBox(width: 8),
-            CircleAvatar(
+            const CircleAvatar(
               radius: 16,
-              backgroundColor: Colors.grey[300],
+              backgroundColor: Color(0xFF0A1628),
               child: Icon(
                 Icons.person,
                 size: 16,
-                color: Colors.grey[600],
+                color: Color(0xFF00C6AE),
               ),
             ),
           ],
@@ -128,20 +136,27 @@ class MessageBubble extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(8),
+          color: const Color(0xFF0A1628).withOpacity(0.5),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: Colors.white.withOpacity(0.3),
+            color: const Color(0xFF00C6AE).withOpacity(0.3),
             width: 1,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              _getFileIcon(message.type),
-              color: Colors.white,
-              size: 24,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF182842),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                _getFileIcon(message.type),
+                color: const Color(0xFF00C6AE),
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -149,30 +164,32 @@ class MessageBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    message.fileName ?? 'Unknown File',
+                    message.fileName ?? 'Unknown Payload',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE8ECF2),
+                      fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 2),
                   if (message.fileSize != null)
                     Text(
                       _formatFileSize(message.fileSize!),
                       style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
+                        color: Color(0xFF8A9AB5),
+                        fontSize: 11,
                       ),
                     ),
                 ],
               ),
             ),
+            const SizedBox(width: 12),
             const Icon(
-              Icons.download,
-              color: Colors.white,
-              size: 20,
+              Icons.download_rounded,
+              color: Color(0xFF00C6AE),
+              size: 24,
             ),
           ],
         ),
@@ -183,11 +200,11 @@ class MessageBubble extends StatelessWidget {
   IconData _getFileIcon(MessageType type) {
     switch (type) {
       case MessageType.image:
-        return Icons.image;
+        return Icons.image_outlined;
       case MessageType.file:
-        return Icons.attach_file;
+        return Icons.attach_file_rounded;
       default:
-        return Icons.insert_drive_file;
+        return Icons.insert_drive_file_outlined;
     }
   }
 
@@ -196,7 +213,7 @@ class MessageBubble extends StatelessWidget {
     final difference = now.difference(timestamp);
 
     if (difference.inDays > 0) {
-      return '${timestamp.day}/${timestamp.month}';
+      return '${timestamp.day.toString().padLeft(2,'0')}/${timestamp.month.toString().padLeft(2,'0')}';
     } else if (difference.inHours > 0) {
       return '${difference.inHours}h ago';
     } else if (difference.inMinutes > 0) {

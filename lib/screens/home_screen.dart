@@ -71,11 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Sentinel'),
+            leading: const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Icon(Icons.shield_outlined, color: Color(0xFF00C6AE)),
+            ),
+            title: const Text('AEGIS'),
             actions: [
               // Security info button
               IconButton(
-                icon: const Icon(Icons.security),
+                icon: const Icon(Icons.security, color: Color(0xFF00C6AE)),
                 onPressed: () {
                   SecurityWarning.showSecurityInfo(context);
                 },
@@ -111,26 +115,46 @@ class _HomeScreenState extends State<HomeScreen> {
               // Groups Tab
               const GroupsScreen(),
               // Info Tab
-              const Center(
+              Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.info, size: 64, color: Color(0xFF1B365D)),
-                    SizedBox(height: 16),
-                    Text(
-                      'Sentinel Security Platform',
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF182842),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: const Color(0xFF00C6AE).withOpacity(0.3),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF00C6AE).withOpacity(0.1),
+                            blurRadius: 20,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.shield_outlined, size: 50, color: Color(0xFF00C6AE)),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'AEGIS PROTOCOL',
                       style: TextStyle(
                         fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1B365D),
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFFE8ECF2),
+                        letterSpacing: 2,
                       ),
                     ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Secure Communication for Defense Personnel',
+                    const SizedBox(height: 8),
+                    const Text(
+                      'SECURE COMMUNICATION MATRIX',
                       style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
+                        fontSize: 12,
+                        color: Color(0xFF00C6AE),
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -141,110 +165,32 @@ class _HomeScreenState extends State<HomeScreen> {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
             onTap: _onTabTapped,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: const Color(0xFF1B365D),
-            unselectedItemColor: Colors.grey,
             items: isAdmin ? [
               const BottomNavigationBarItem(
-                icon: Icon(Icons.group),
-                label: 'Groups',
+                icon: Icon(Icons.group_work_outlined),
+                activeIcon: Icon(Icons.group_work),
+                label: 'Squads',
               ),
               const BottomNavigationBarItem(
-                icon: Icon(Icons.admin_panel_settings),
-                label: 'Admin',
+                icon: Icon(Icons.admin_panel_settings_outlined),
+                activeIcon: Icon(Icons.admin_panel_settings),
+                label: 'Command',
               ),
             ] : [
               const BottomNavigationBarItem(
-                icon: Icon(Icons.group),
-                label: 'Groups',
+                icon: Icon(Icons.group_work_outlined),
+                activeIcon: Icon(Icons.group_work),
+                label: 'Squads',
               ),
               const BottomNavigationBarItem(
-                icon: Icon(Icons.info),
-                label: 'Info',
+                icon: Icon(Icons.info_outline),
+                activeIcon: Icon(Icons.info),
+                label: 'Protocol',
               ),
             ],
           ),
-          floatingActionButton: _currentIndex == 0
-              ? FloatingActionButton(
-                  onPressed: () {
-                    _showJoinGroupDialog(context);
-                  },
-                  backgroundColor: const Color(0xFF1B365D),
-                  child: const Icon(Icons.add, color: Colors.white),
-                )
-              : null,
         );
       },
-    );
-  }
-
-  void _showJoinGroupDialog(BuildContext context) {
-    final inviteCodeController = TextEditingController();
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Join Group'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Enter the invite code to join a group:'),
-              const SizedBox(height: 16),
-              SecureTextField(
-                controller: inviteCodeController,
-                hintText: 'Invite Code',
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.vpn_key),
-                  labelText: 'Invite Code',
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          Consumer<GroupProvider>(
-            builder: (context, groupProvider, child) {
-              return ElevatedButton(
-                onPressed: groupProvider.isLoading ? null : () async {
-                  if (inviteCodeController.text.trim().isNotEmpty) {
-                    Navigator.of(context).pop();
-                    
-                    final success = await groupProvider.joinGroup(inviteCodeController.text.trim());
-                    
-                    if (success && mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Successfully joined the group!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    } else if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(groupProvider.error ?? 'Failed to join group'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: groupProvider.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Join'),
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 }

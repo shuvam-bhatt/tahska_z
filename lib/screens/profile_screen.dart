@@ -23,15 +23,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    
-    // Activate containment for profile screen
     ContainmentUtils().activateContainment(
       onScreenshotDetected: () {
         SecurityWarning.showScreenshotWarning(context);
       },
     );
     
-    // Initialize form with current user data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       if (authProvider.user != null) {
@@ -59,8 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Profile updated successfully!'),
-          backgroundColor: Colors.green,
+          content: Text('Operative profile updated successfully!'),
+          backgroundColor: Color(0xFF00C6AE),
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
@@ -72,8 +70,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _confirmPasswordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill in all password fields'),
-          backgroundColor: Colors.red,
+          content: Text('Please fill in all passphrase fields'),
+          backgroundColor: Color(0xFFFF5A5F),
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -82,8 +81,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_newPasswordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('New passwords do not match'),
-          backgroundColor: Colors.red,
+          content: Text('New passphrases do not match'),
+          backgroundColor: Color(0xFFFF5A5F),
+          behavior: SnackBarBehavior.floating,
         ),
       );
       return;
@@ -101,8 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _confirmPasswordController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Password changed successfully!'),
-          backgroundColor: Colors.green,
+          content: Text('Passphrase updated securely!'),
+          backgroundColor: Color(0xFF00C6AE),
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
@@ -112,8 +113,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: const Text('DISCONNECT'),
+        content: const Text('Are you sure you want to terminate this session?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -121,22 +122,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Logout'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF5A5F),
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Disconnect'),
           ),
         ],
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed == true && mounted) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.logout();
-      
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/login',
-          (route) => false,
-        );
+        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     }
   }
@@ -145,10 +145,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('OPERATIVE PROFILE'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.security),
+            icon: const Icon(Icons.security, color: Color(0xFF00C6AE)),
             onPressed: () {
               SecurityWarning.showSecurityInfo(context);
             },
@@ -159,9 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           if (authProvider.user == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final user = authProvider.user!;
@@ -179,13 +177,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         CircleAvatar(
                           radius: 40,
-                          backgroundColor: const Color(0xFF1B365D),
+                          backgroundColor: const Color(0xFF0A1628),
                           child: Text(
                             user.name[0].toUpperCase(),
                             style: const TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Color(0xFF00C6AE),
                             ),
                           ),
                         ),
@@ -195,32 +193,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFFE8ECF2),
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           user.email,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: Color(0xFF8A9AB5),
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
+                            horizontal: 16,
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: _getRoleColor(user.role),
-                            borderRadius: BorderRadius.circular(16),
+                            color: _getRoleColor(user.role).withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: _getRoleColor(user.role)),
                           ),
                           child: Text(
                             _getRoleDisplayName(user.role),
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: _getRoleColor(user.role),
                               fontWeight: FontWeight.bold,
                               fontSize: 12,
+                              letterSpacing: 1,
                             ),
                           ),
                         ),
@@ -239,10 +240,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Profile Information',
+                          'CLEARANCE DOSSIER',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                            color: Color(0xFF8A9AB5),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -252,44 +255,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               SecureTextField(
                                 controller: _nameController,
-                                hintText: 'Full Name',
+                                hintText: 'Operative Name',
+                                validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
                                 decoration: const InputDecoration(
-                                  labelText: 'Full Name',
-                                  prefixIcon: Icon(Icons.person),
+                                  labelText: 'Operative Name',
+                                  prefixIcon: Icon(Icons.person_outline),
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              TextField(
+                              TextFormField(
                                 readOnly: true,
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  prefixIcon: const Icon(Icons.email),
-                                  filled: true,
-                                  fillColor: Colors.grey[100],
+                                decoration: const InputDecoration(
+                                  labelText: 'Clearance Email',
+                                  prefixIcon: Icon(Icons.email_outlined),
                                 ),
                                 controller: TextEditingController(text: user.email),
                               ),
                               const SizedBox(height: 16),
-                              TextField(
+                              TextFormField(
                                 readOnly: true,
-                                decoration: InputDecoration(
-                                  labelText: 'Role',
-                                  prefixIcon: const Icon(Icons.work),
-                                  filled: true,
-                                  fillColor: Colors.grey[100],
+                                decoration: const InputDecoration(
+                                  labelText: 'Clearance Level',
+                                  prefixIcon: Icon(Icons.shield_outlined),
                                 ),
                                 controller: TextEditingController(
                                   text: _getRoleDisplayName(user.role),
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              TextField(
+                              TextFormField(
                                 readOnly: true,
-                                decoration: InputDecoration(
-                                  labelText: 'Member Since',
-                                  prefixIcon: const Icon(Icons.calendar_today),
-                                  filled: true,
-                                  fillColor: Colors.grey[100],
+                                decoration: const InputDecoration(
+                                  labelText: 'Commission Date',
+                                  prefixIcon: Icon(Icons.calendar_today_outlined),
                                 ),
                                 controller: TextEditingController(
                                   text: _formatDate(user.createdAt),
@@ -305,16 +303,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: authProvider.isLoading ? null : _updateProfile,
                             child: authProvider.isLoading
                                 ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
+                                    height: 20, width: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
                                   )
-                                : const Text('Update Profile'),
+                                : const Text('UPDATE DOSSIER'),
                           ),
                         ),
                       ],
@@ -332,25 +324,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Change Password',
+                          'SECURITY CREDENTIALS',
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                            color: Color(0xFF8A9AB5),
                           ),
                         ),
                         const SizedBox(height: 16),
                         SecureTextField(
                           controller: _oldPasswordController,
-                          hintText: 'Current Password',
+                          hintText: 'Current Passphrase',
                           obscureText: _obscureOldPassword,
                           decoration: InputDecoration(
-                            labelText: 'Current Password',
-                            prefixIcon: const Icon(Icons.lock),
+                            labelText: 'Current Passphrase',
+                            prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscureOldPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscureOldPassword ? Icons.visibility_off : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -363,16 +355,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 16),
                         SecureTextField(
                           controller: _newPasswordController,
-                          hintText: 'New Password',
+                          hintText: 'New Passphrase',
                           obscureText: _obscureNewPassword,
                           decoration: InputDecoration(
-                            labelText: 'New Password',
-                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: 'New Passphrase',
+                            prefixIcon: const Icon(Icons.lock_reset),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscureNewPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscureNewPassword ? Icons.visibility_off : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -385,16 +375,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 16),
                         SecureTextField(
                           controller: _confirmPasswordController,
-                          hintText: 'Confirm New Password',
+                          hintText: 'Confirm New Passphrase',
                           obscureText: _obscureConfirmPassword,
                           decoration: InputDecoration(
-                            labelText: 'Confirm New Password',
-                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: 'Confirm New Passphrase',
+                            prefixIcon: const Icon(Icons.lock_reset),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -410,20 +398,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: ElevatedButton(
                             onPressed: authProvider.isLoading ? null : _changePassword,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange,
+                              backgroundColor: const Color(0xFFFFB547), // Gold warning color
+                              foregroundColor: const Color(0xFF0A1628),
                             ),
                             child: authProvider.isLoading
                                 ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
+                                    height: 20, width: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
                                   )
-                                : const Text('Change Password'),
+                                : const Text('CYCLE PASSPHRASE'),
                           ),
                         ),
                       ],
@@ -439,29 +422,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: ElevatedButton(
                     onPressed: _logout,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      backgroundColor: const Color(0xFFFF5A5F),
+                      foregroundColor: Colors.white,
                     ),
-                    child: const Text('Logout'),
+                    child: const Text('DISCONNECT'),
                   ),
                 ),
                 
                 const SizedBox(height: 20),
                 
-                // Error Message
                 if (authProvider.error != null)
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.red[50],
+                      color: const Color(0xFFFF5A5F).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red[200]!),
+                      border: Border.all(color: const Color(0xFFFF5A5F).withOpacity(0.3)),
                     ),
                     child: Text(
                       authProvider.error!,
-                      style: TextStyle(
-                        color: Colors.red[700],
+                      style: const TextStyle(
+                        color: Color(0xFFFF5A5F),
                         fontSize: 14,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
               ],
@@ -475,26 +459,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Color _getRoleColor(String role) {
     switch (role) {
       case 'hq_admin':
-        return Colors.purple;
+        return const Color(0xFFFFB547);
       case 'admin':
-        return Colors.blue;
+        return const Color(0xFF00C6AE);
       default:
-        return Colors.green;
+        return const Color(0xFF8A9AB5);
     }
   }
 
   String _getRoleDisplayName(String role) {
     switch (role) {
       case 'hq_admin':
-        return 'HQ Admin';
+        return 'HQ COMMAND';
       case 'admin':
-        return 'Group Admin';
+        return 'SQUAD LEADER';
       default:
-        return 'Defense Personnel';
+        return 'OPERATIVE';
     }
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+    return '${date.day.toString().padLeft(2,'0')}/${date.month.toString().padLeft(2,'0')}/${date.year}';
   }
 }

@@ -27,14 +27,12 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     
-    // Activate containment for chat screen
     ContainmentUtils().activateContainment(
       onScreenshotDetected: () {
         SecurityWarning.showScreenshotWarning(context);
       },
     );
     
-    // Load messages
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       chatProvider.setCurrentGroup(widget.group.id);
@@ -75,8 +73,8 @@ class _ChatScreenState extends State<ChatScreen> {
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(chatProvider.error ?? 'Failed to send message'),
-          backgroundColor: Colors.red,
+          content: Text(chatProvider.error ?? 'Transmission failed'),
+          backgroundColor: const Color(0xFFFF5A5F),
         ),
       );
     }
@@ -88,8 +86,8 @@ class _ChatScreenState extends State<ChatScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('File size exceeds 10MB limit'),
-              backgroundColor: Colors.red,
+              content: Text('File exceeds 10MB limit'),
+              backgroundColor: Color(0xFFFF5A5F),
             ),
           );
         }
@@ -97,15 +95,14 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-      // Set the current group ID for the chat provider
       chatProvider.setCurrentGroup(widget.group.id);
       final success = await chatProvider.sendFile(file);
 
       if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(chatProvider.error ?? 'Failed to send file'),
-            backgroundColor: Colors.red,
+            content: Text(chatProvider.error ?? 'Transmission failed'),
+            backgroundColor: const Color(0xFFFF5A5F),
           ),
         );
       }
@@ -113,8 +110,8 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to send file: $e'),
-            backgroundColor: Colors.red,
+            content: Text('Transmission failed: $e'),
+            backgroundColor: const Color(0xFFFF5A5F),
           ),
         );
       }
@@ -129,12 +126,10 @@ class _ChatScreenState extends State<ChatScreen> {
       final fileBytes = await chatProvider.downloadFile(message.fileUrl!);
 
       if (fileBytes != null && mounted) {
-        // In a real app, you would save the file to device storage
-        // For demo purposes, we'll just show a success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('File "${message.fileName}" downloaded successfully'),
-            backgroundColor: Colors.green,
+            content: Text('Payload "${message.fileName}" acquired successfully'),
+            backgroundColor: const Color(0xFF00C6AE),
           ),
         );
       }
@@ -142,8 +137,8 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to download file: $e'),
-            backgroundColor: Colors.red,
+            content: Text('Payload acquisition failed: $e'),
+            backgroundColor: const Color(0xFFFF5A5F),
           ),
         );
       }
@@ -155,21 +150,25 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(widget.group.name),
             Text(
-              '${widget.group.memberCount} members',
+              widget.group.name.toUpperCase(),
+              style: const TextStyle(letterSpacing: 2, fontSize: 16),
+            ),
+            Text(
+              '${widget.group.memberCount} OPERATIVES ACTIVE',
               style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
+                fontSize: 10,
+                color: Color(0xFF00C6AE),
+                letterSpacing: 1.5,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline, color: Color(0xFF8A9AB5)),
             onPressed: () {
               _showGroupInfo(context);
             },
@@ -184,7 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, chatProvider, child) {
                 if (chatProvider.isLoading && chatProvider.messages.isEmpty) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(color: Color(0xFF00C6AE)),
                   );
                 }
 
@@ -193,28 +192,34 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.error_outline,
+                        const Icon(
+                          Icons.warning_amber_rounded,
                           size: 64,
-                          color: Colors.red[300],
+                          color: Color(0xFFFF5A5F),
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          'Error loading messages',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                        const Text(
+                          'COMMUNICATION ERROR',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                            color: Color(0xFFE8ECF2),
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           chatProvider.error!,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: const TextStyle(color: Color(0xFF8A9AB5)),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: () {
                             chatProvider.loadMessages(widget.group.id);
                           },
-                          child: const Text('Retry'),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('RE-ESTABLISH LINK'),
                         ),
                       ],
                     ),
@@ -227,33 +232,37 @@ class _ChatScreenState extends State<ChatScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.chat_bubble_outline,
+                          Icons.radar,
                           size: 64,
-                          color: Colors.grey[400],
+                          color: const Color(0xFF8A9AB5).withOpacity(0.3),
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          'No messages yet',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                        const Text(
+                          'CHANNEL SECURE',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                            color: Color(0xFFE8ECF2),
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          'Start the conversation!',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        const Text(
+                          'Awaiting initial transmission...',
+                          style: TextStyle(color: Color(0xFF8A9AB5)),
                         ),
                       ],
                     ),
                   );
                 }
 
-                // Auto-scroll to bottom when new messages arrive
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToBottom();
                 });
 
                 return ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   itemCount: chatProvider.messages.length,
                   itemBuilder: (context, index) {
                     final message = chatProvider.messages[index];
@@ -273,19 +282,13 @@ class _ChatScreenState extends State<ChatScreen> {
           
           // Message Input
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 24),
             decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              color: const Color(0xFF111D33),
+              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 // File picker button
                 FilePickerButton(
@@ -297,17 +300,23 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   child: SecureTextField(
                     controller: _messageController,
-                    hintText: 'Type a message...',
+                    hintText: 'Transmit message...',
                     maxLines: null,
                     onChanged: (value) {
                       setState(() {
                         _isTyping = value.trim().isNotEmpty;
                       });
                     },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xFF182842),
+                      hintStyle: TextStyle(color: const Color(0xFF8A9AB5).withOpacity(0.5)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
                         vertical: 12,
                       ),
                     ),
@@ -318,22 +327,29 @@ class _ChatScreenState extends State<ChatScreen> {
                 // Send button
                 Consumer<ChatProvider>(
                   builder: (context, chatProvider, child) {
-                    return IconButton(
-                      onPressed: _isTyping && !chatProvider.isLoading
-                          ? _sendMessage
-                          : null,
-                      icon: chatProvider.isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.send),
-                      style: IconButton.styleFrom(
-                        backgroundColor: _isTyping
-                            ? const Color(0xFF1B365D)
-                            : Colors.grey[300],
-                        foregroundColor: _isTyping ? Colors.white : Colors.grey[600],
+                    return Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _isTyping ? const Color(0xFF00C6AE) : const Color(0xFF182842),
+                      ),
+                      child: IconButton(
+                        onPressed: _isTyping && !chatProvider.isLoading
+                            ? _sendMessage
+                            : null,
+                        icon: chatProvider.isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Color(0xFF0A1628),
+                                ),
+                              )
+                            : Icon(
+                                Icons.send,
+                                color: _isTyping ? const Color(0xFF0A1628) : const Color(0xFF8A9AB5),
+                                size: 20,
+                              ),
                       ),
                     );
                   },
@@ -350,49 +366,72 @@ class _ChatScreenState extends State<ChatScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(widget.group.name),
+        title: Text(widget.group.name.toUpperCase(), style: const TextStyle(letterSpacing: 1.5)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.group.description.isNotEmpty) ...[
               const Text(
-                'Description:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                'MISSION OBJECTIVE',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF8A9AB5), fontSize: 12, letterSpacing: 1),
               ),
               const SizedBox(height: 4),
-              Text(widget.group.description),
-              const SizedBox(height: 16),
+              Text(widget.group.description, style: const TextStyle(color: Color(0xFFE8ECF2))),
+              const SizedBox(height: 24),
             ],
             const Text(
-              'Invite Code:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              'SECURE ACCESS CODE',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF8A9AB5), fontSize: 12, letterSpacing: 1),
             ),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                widget.group.inviteCode,
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text('Members: ${widget.group.memberCount}'),
             const SizedBox(height: 8),
-            Text('Created: ${_formatDate(widget.group.createdAt)}'),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A1628),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFF00C6AE).withOpacity(0.5)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.group.inviteCode,
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF00C6AE),
+                        fontSize: 18,
+                        letterSpacing: 2,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('OPERATIVES', style: TextStyle(color: Color(0xFF8A9AB5))),
+                Text('${widget.group.memberCount}', style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const Divider(height: 24, color: Color(0xFF182842)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('ESTABLISHED', style: TextStyle(color: Color(0xFF8A9AB5))),
+                Text(_formatDate(widget.group.createdAt), style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const Text('CLOSE'),
           ),
         ],
       ),
@@ -400,6 +439,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
+    return '${date.day.toString().padLeft(2,'0')}/${date.month.toString().padLeft(2,'0')}/${date.year}';
   }
 }

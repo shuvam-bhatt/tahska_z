@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">🛡️ Sentinel</h1>
+  <h1 align="center">🛡️ Aegis</h1>
   <p align="center">
     <strong>Secure Closed-Group Communication for Indian Defense Personnel</strong>
   </p>
@@ -12,7 +12,7 @@
 
 ## Overview
 
-Sentinel is a Flutter-based prototype for secure, closed-group communication designed for Indian defense personnel, veterans, and their families. All messages and files are **AES-256 encrypted client-side** before leaving the device, ensuring true end-to-end security over public networks.
+Aegis is a Flutter-based prototype for secure, closed-group communication designed for Indian defense personnel, veterans, and their families. All messages and files are **AES-256 encrypted client-side** before leaving the device, ensuring true end-to-end security over public networks.
 
 Built for the **Smart India Hackathon (SIH) 2024**.
 
@@ -96,14 +96,14 @@ db/                            # Supabase SQL scripts
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/<your-username>/sentinel.git
-cd sentinel
+git clone https://github.com/<your-username>/aegis.git
+cd aegis
 flutter pub get
 ```
 
 ### 2. Set Up Supabase
 
-1. Create a new project at [supabase.com](https://supabase.com) (name: `sentinel`).
+1. Create a new project at [supabase.com](https://supabase.com) (name: `aegis`).
 2. Go to **Settings → API** and copy your **Project URL** and **Anon Key**.
 3. Update `lib/services/supabase_service.dart`:
 

@@ -1,4 +1,4 @@
-name: sentinel
+name: aegis
 description: "Secure closed-group communication app for Indian defense personnel"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

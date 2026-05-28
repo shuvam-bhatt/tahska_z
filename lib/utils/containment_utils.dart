@@ -55,6 +55,7 @@ class SecureTextField extends StatefulWidget {
   final VoidCallback? onTap;
   final bool enabled;
   final InputDecoration? decoration;
+  final FormFieldValidator<String>? validator;
 
   const SecureTextField({
     super.key,
@@ -68,6 +69,7 @@ class SecureTextField extends StatefulWidget {
     this.onTap,
     this.enabled = true,
     this.decoration,
+    this.validator,
   });
 
   @override
@@ -118,20 +120,21 @@ class _SecureTextFieldState extends State<SecureTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: _controller,
       obscureText: widget.obscureText,
       keyboardType: widget.keyboardType,
       maxLines: widget.maxLines,
       maxLength: widget.maxLength,
       enabled: widget.enabled,
+      validator: widget.validator,
       decoration: widget.decoration ?? InputDecoration(
         hintText: widget.hintText,
         border: const OutlineInputBorder(),
       ),
       onChanged: widget.onChanged,
       onTap: widget.onTap,
-      onSubmitted: (value) {
+      onFieldSubmitted: (value) {
         // Prevent paste on submit
         if (_isPasteBlocked) {
           _blockPaste();

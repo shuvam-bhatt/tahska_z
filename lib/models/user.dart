@@ -21,8 +21,10 @@ class User {
       email: json['email'],
       name: json['name'],
       role: json['role'] ?? 'user',
-      createdAt: DateTime.parse(json['createdAt']),
-      groupIds: List<String>.from(json['groupIds'] ?? []),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      groupIds: List<String>.from(json['group_ids'] ?? json['groupIds'] ?? []),
     );
   }
 
@@ -31,8 +33,8 @@ class User {
       'email': email,
       'name': name,
       'role': role,
-      'createdAt': createdAt.toIso8601String(),
-      'groupIds': groupIds,
+      'created_at': createdAt.toIso8601String(),
+      'group_ids': groupIds,
     };
   }
 

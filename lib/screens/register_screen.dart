@@ -24,7 +24,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    // Activate containment for register screen
     ContainmentUtils().activateContainment(
       onScreenshotDetected: () {
         SecurityWarning.showScreenshotWarning(context);
@@ -63,39 +62,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Create Account'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: const Color(0xFF1B365D),
+        title: const Text('REQUEST ACCESS'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 
                 // Title
                 const Text(
-                  'Join Sentinel',
+                  'JOIN AEGIS',
                   style: TextStyle(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B365D),
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFFE8ECF2),
+                    letterSpacing: 3,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Create your secure account',
+                const Text(
+                  'ESTABLISH SECURE CLEARANCE',
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
+                    fontSize: 12,
+                    color: Color(0xFF00C6AE),
+                    letterSpacing: 2,
+                    fontWeight: FontWeight.w600,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -104,10 +102,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 
                 // Registration Form
                 Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
@@ -117,9 +111,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         SecureTextField(
                           controller: _nameController,
                           hintText: 'Full Name',
+                          validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.person_outlined),
-                            labelText: 'Full Name',
+                            prefixIcon: Icon(Icons.person_outline),
+                            labelText: 'Operative Name',
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -127,11 +122,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Email Field
                         SecureTextField(
                           controller: _emailController,
-                          hintText: 'Email Address',
+                          hintText: 'user@defense.mil',
                           keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'Email is required';
+                            if (!value.contains('@')) return 'Invalid email format';
+                            return null;
+                          },
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.email_outlined),
-                            labelText: 'Email',
+                            labelText: 'Clearance Email',
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -139,15 +139,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Role Selection
                         DropdownButtonFormField<String>(
                           value: _selectedRole,
+                          dropdownColor: const Color(0xFF182842),
+                          style: const TextStyle(color: Color(0xFFE8ECF2), fontSize: 14),
                           decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.work_outlined),
-                            labelText: 'Role',
-                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.shield_outlined),
+                            labelText: 'Clearance Level',
                           ),
                           items: const [
                             DropdownMenuItem(
                               value: 'user',
-                              child: Text('Defense Personnel/Veteran/Family'),
+                              child: Text('Defense Personnel / Family'),
                             ),
                             DropdownMenuItem(
                               value: 'admin',
@@ -169,16 +170,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Password Field
                         SecureTextField(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: 'Enter passphrase',
                           obscureText: _obscurePassword,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'Passphrase is required';
+                            if (value.length < 6) return 'Passphrase too short (min 6 chars)';
+                            return null;
+                          },
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outlined),
-                            labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: 'Passphrase',
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                color: const Color(0xFF8A9AB5),
                               ),
                               onPressed: () {
                                 setState(() {
@@ -193,16 +198,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         // Confirm Password Field
                         SecureTextField(
                           controller: _confirmPasswordController,
-                          hintText: 'Confirm Password',
+                          hintText: 'Confirm passphrase',
                           obscureText: _obscureConfirmPassword,
+                          validator: (value) {
+                            if (value != _passwordController.text) return 'Passphrases do not match';
+                            return null;
+                          },
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outlined),
-                            labelText: 'Confirm Password',
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            labelText: 'Confirm Passphrase',
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                                color: const Color(0xFF8A9AB5),
                               ),
                               onPressed: () {
                                 setState(() {
@@ -212,7 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 32),
                         
                         // Register Button
                         Consumer<AuthProvider>(
@@ -226,40 +234,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
+                                          Color(0xFF0A1628),
                                         ),
                                       ),
                                     )
-                                  : const Text('Create Account'),
+                                  : const Text('ESTABLISH CREDENTIALS'),
                             );
                           },
                         ),
                         
-                        const SizedBox(height: 20),
-                        
-                        // Error Message
-                        Consumer<AuthProvider>(
-                          builder: (context, authProvider, child) {
-                            if (authProvider.error != null) {
-                              return Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.red[50],
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red[200]!),
-                                ),
-                                child: Text(
-                                  authProvider.error!,
-                                  style: TextStyle(
-                                    color: Colors.red[700],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
-                        ),
+                        if (Provider.of<AuthProvider>(context).error != null) ...[
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF5A5F).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: const Color(0xFFFF5A5F).withOpacity(0.3)),
+                            ),
+                            child: Text(
+                              Provider.of<AuthProvider>(context).error!,
+                              style: const TextStyle(
+                                color: Color(0xFFFF5A5F),
+                                fontSize: 13,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -271,19 +273,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Already have an account? ",
-                      style: TextStyle(color: Colors.grey[600]),
+                    const Text(
+                      "Clearance active? ",
+                      style: TextStyle(color: Color(0xFF8A9AB5)),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                       child: const Text(
-                        'Sign In',
+                        'Authenticate',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B365D),
                         ),
                       ),
                     ),
