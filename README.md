@@ -254,4 +254,4 @@ This project was developed as a prototype for **SIH 2024** demonstration purpose
 <p align="center">
   Built with Flutter · Secured with AES-256 · Powered by Supabase
 </p>
-# tahska_z
+# Aegis
